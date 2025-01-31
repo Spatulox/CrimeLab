@@ -1,4 +1,11 @@
-// Put all types of data stored in db here
-interface Site {
-	//...
-}
+import { Schema, model } from 'mongoose';
+
+
+const IndividualSchema = new Schema({
+    name: String,
+    role: String,
+    phoneNumber: String,
+    address: String
+});
+
+const Individual = model('Individual', IndividualSchema);
