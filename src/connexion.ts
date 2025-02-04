@@ -9,7 +9,7 @@ mongoose.connect(mongoURI)
     .then(() => console.log(' Connexion à MongoDB réussie'))
     .catch(err => console.error(' Erreur de connexion à MongoDB :', err));
 
-const neo4jURI = 'bolt://neo4j:7687';
+const neo4jURI = 'bolt://localhost:7687'
 const neo4jUser = 'neo4j';
 const neo4jPassword = 'password';
 
