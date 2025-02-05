@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const mongoURI = 'mongodb://mongo:27017/crimelab';
+const mongoURI = 'mongodb://localhost:27017/crimelab';
 mongoose.connect(mongoURI)
     .then(() => console.log(' Connexion à MongoDB réussie'))
     .catch(err => console.error(' Erreur de connexion à MongoDB :', err));
