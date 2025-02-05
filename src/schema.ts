@@ -9,3 +9,29 @@ const IndividualSchema = new Schema({
 });
 
 const Individual = model('Individual', IndividualSchema);
+
+const CaseSchema = new Schema({
+    title: String,
+    description: String,
+    date: { type: Date, default: Date.now },
+    location: String,
+    individuals: [{ type: Schema.Types.ObjectId, ref: 'Individual' }]
+});
+const Case = model('Case', CaseSchema);
+
+const TestimonySchema = new Schema({
+    witness: { type: Schema.Types.ObjectId, ref: 'Individual' },
+    case: { type: Schema.Types.ObjectId, ref: 'Case' },
+    statement: String
+
+});
+const Testimony = model('Testimony', TestimonySchema);
+
+const CallRecordSchema = new Schema({
+    caller: { type: Schema.Types.ObjectId, ref: 'Individual' },
+    receiver: { type: Schema.Types.ObjectId, ref: 'Individual' },
+    antennaLocation: String
+});
+const CallRecord = model('CallRecord', CallRecordSchema);
+
+export { Individual, Case, Testimony, CallRecord };
