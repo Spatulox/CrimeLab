@@ -34,4 +34,13 @@ const CallRecordSchema = new Schema({
 });
 const CallRecord = model('CallRecord', CallRecordSchema);
 
-export { Individual, Case, Testimony, CallRecord };
+const LocationSchema = new Schema({
+    name: String,
+    address: String,
+    latitude: Number,
+    longitude: Number
+});
+const Location = model('Location', LocationSchema);
+
+
+export { Individual, Case, Testimony, CallRecord ,Location};
