@@ -42,5 +42,13 @@ const LocationSchema = new Schema({
 });
 const Location = model('Location', LocationSchema);
 
+const AntennaSchema = new Schema({
+    latitude: Number,
+    longitude: Number,
+    nom_com: String,
+    nom_dep: String
+});
 
-export { Individual, Case, Testimony, CallRecord ,Location};
+const Antenna = model("Antenna", AntennaSchema);
+
+export { Individual, Case, Testimony, CallRecord ,Location,Antenna};
