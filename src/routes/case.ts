@@ -17,10 +17,12 @@ caseRoutes.get('/all', async (req: Request, res: Response) => {
 // /case/search?q_title=TitreDuCas
 // /case/search?q_time=heure en 2025-02-08 ou 2025-02-08T10:00
 // /case/search?q_location=id or name
+// /case/search?q_individual=id or name
 caseRoutes.get('/search', async (req: Request, res: Response) => {
     const query = req.query.q_title as string | undefined;
     const timeString = req.query.q_time as string | undefined;
     const location = req.query.q_location as string | undefined;
+    const individual = req.query.q_individual as string | undefined;
 
     let searchCriteria: any = {};
 
@@ -59,7 +61,24 @@ caseRoutes.get('/search', async (req: Request, res: Response) => {
             }
         }
     }
-    console.log(searchCriteria)
+
+    if (individual) {
+        if (isMongoId(individual)) {
+            searchCriteria.individuals = ObjectId(individual);
+        } else {
+            try {
+                const individualDoc = await Individual.findOne({ name: new RegExp(individual, 'i') }).select('_id');
+                if (individualDoc) {
+                    searchCriteria.individuals = individualDoc._id;
+                } else {
+                    return exitWithMessage(res, "Individu non trouvé", HttpStatus.NOT_FOUND);
+                }
+            } catch (err) {
+                return exitWithMessage(res, `Erreur lors de la recherche de l'individu: ${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+    }
+
     try {
         const case_content = await Case.find(searchCriteria)
             .populate("location individuals")
