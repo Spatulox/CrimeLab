@@ -1,6 +1,5 @@
 import { Router, Request, Response } from 'express';
 import { exitWithMessage, exitWithContent, HttpStatus, isMongoId, ObjectId } from './shared'
-import { mongoose, neo4jSession, neo4jDriver } from '../connexion'
 import { Individual, Case, Testimony, CallRecord ,Location,Antenna} from '../schema'
 import { Types } from 'mongoose'
 
@@ -10,7 +9,6 @@ userRoutes.get('/search', async (req: Request, res: Response) => {
     const user = req.query.user as string
     try{
         const user_content = await Individual.find({ name: new RegExp(user, 'i') })
-        const case_content = "";
         exitWithContent(res, user_content)
         return
     } catch(err){
@@ -47,6 +45,7 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
 
         const time = timeString ? new Date(timeString) : undefined;
 
+        // si on cherche que l'utilisateur
         if (!time && !location) {
             const user_content = await Individual.findById(id);
             if (!user_content) {
@@ -60,19 +59,21 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
 
         const user = await Individual.findById(id);
         if (!user) {
-            exitWithMessage(res, "Utilisateur non trouvé")
+            exitWithMessage(res, "Utilisateur non trouvé", HttpStatus.NOT_FOUND)
             return
         }
         
-        let locationId: Types.ObjectId | string = location;
+        let locationId: string = location;
 
         if (location && !isMongoId(location)) {
             const locationDoc = await Location.findOne({ address: location }).select('_id');
             if (locationDoc) {
-                locationId = locationDoc._id;
+                locationId = locationDoc._id.toString();
+            } else {
+                exitWithMessage(res, "Location don't exist", HttpStatus.NOT_FOUND)
+                return
             }
         }
-
 
         let startTime: Date;
         let endTime: Date;
@@ -90,13 +91,13 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
             relevantCases = await Case.find({
                 individuals: ObjectId(id),
                 date: { $gte: startTime, $lte: endTime },
-                location: locationId.toString()
+                location: ObjectId(locationId)
             }).populate('individuals location');
         
         } else {
             relevantCases = await Case.find({
                 individuals: ObjectId(id),
-                location: locationId.toString()
+                location: ObjectId(locationId)
             }).populate('individuals location');
         }
 
