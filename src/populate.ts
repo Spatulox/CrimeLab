@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Individual, Case, Testimony, Location, CallRecord } from './schema';
+import { Individual, Case, Testimony, Location, CallRecord ,Antenna} from './schema';
 import { neo4jDriver } from './connexion';
 
 
@@ -157,3 +157,61 @@ async function generateFakeData() {
 }
 
 export { generateFakeData };
+
+
+
+async function generateCallRecords() {
+    console.log(" Génération des appels téléphoniques...");
+
+    const cases = await Case.find().populate("individuals");
+    const antennas = await Antenna.find();
+
+    if (cases.length === 0 || antennas.length === 0) {
+        console.warn(" Pas d'affaires ou d'antennes disponibles pour générer des appels.");
+        return;
+    }
+
+    const calls = [];
+
+    for (const crimeCase of cases) {
+        const individuals = crimeCase.individuals;
+        if (individuals.length < 2) continue;
+
+        for (let i = 0; i < faker.number.int({ min: 2, max: 5 }); i++) {
+            const [caller, receiver] = faker.helpers.shuffle(individuals).slice(0, 2);
+            const antenna = faker.helpers.arrayElement(antennas);
+            if (!antenna) continue;
+
+            const call = new CallRecord({
+                caller: caller._id,
+                receiver: receiver._id,
+                antenna: antenna._id,
+                dateTime: faker.date.recent({ days: 30 }),
+                duration: faker.number.int({ min: 30, max: 600 })
+            });
+
+            const savedCall = await call.save();
+            calls.push(savedCall);
+
+            if (savedCall.caller && savedCall.receiver && savedCall.antenna) {
+                await runNeo4jQuery(
+                    "MATCH (c1:Individual {id: $callerId}), (c2:Individual {id: $receiverId}), (a:Antenna {id: $antennaId}) " +
+                    "CREATE (c1)-[:CALLED {dateTime: $dateTime, duration: $duration}]->(c2)-[:VIA]->(a)",
+                    {
+                        callerId: savedCall.caller.toString(),
+                        receiverId: savedCall.receiver.toString(),
+                        antennaId: savedCall.antenna.toString(),
+                        dateTime: savedCall.dateTime.toISOString(),
+                        duration: savedCall.duration
+                    }
+                );
+            } else {
+                console.warn("Un appel avec des valeurs null a été ignoré !");
+            }
+        }
+    }
+
+    console.log(`${calls.length} appels générés et insérés.`);
+}
+
+export { generateCallRecords };
