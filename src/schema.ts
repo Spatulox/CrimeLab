@@ -14,7 +14,7 @@ const CaseSchema = new Schema({
     title: String,
     description: String,
     date: { type: Date, default: Date.now },
-    location: String,
+    location: { type: Schema.Types.ObjectId, ref: "Location" },
     individuals: [{ type: Schema.Types.ObjectId, ref: 'Individual' }]
 });
 const Case = model('Case', CaseSchema);
