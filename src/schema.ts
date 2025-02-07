@@ -27,13 +27,6 @@ const TestimonySchema = new Schema({
 });
 const Testimony = model('Testimony', TestimonySchema);
 
-const CallRecordSchema = new Schema({
-    caller: { type: Schema.Types.ObjectId, ref: 'Individual' },
-    receiver: { type: Schema.Types.ObjectId, ref: 'Individual' },
-    antennaLocation: String
-});
-const CallRecord = model('CallRecord', CallRecordSchema);
-
 const LocationSchema = new Schema({
     name: String,
     address: String,
@@ -49,6 +42,18 @@ const AntennaSchema = new Schema({
     nom_dep: String
 });
 
-const Antenna = model("Antenna", AntennaSchema);
+const Antenna = model("Antenna", AntennaSchema)
+
+const CallRecordSchema = new Schema({
+    caller: { type: Schema.Types.ObjectId, ref: "Individual" },
+    receiver: { type: Schema.Types.ObjectId, ref: "Individual" },
+    antenna: { type: Schema.Types.ObjectId, ref: "Antenna" },
+    dateTime: { type: Date, default: Date.now },
+    duration: Number
+});
+
+const CallRecord = model("CallRecord", CallRecordSchema);
+
+
 
 export { Individual, Case, Testimony, CallRecord ,Location,Antenna};
