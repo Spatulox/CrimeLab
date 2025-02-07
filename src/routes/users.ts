@@ -7,5 +7,5 @@ userRoutes.get('/id', (req: Request, res: Response) => {
 });
 
 userRoutes.get('/?', (req: Request, res: Response) => {
-    res.send('Hello ? !');
+    exitWithMessage(res, `Tu es perdu...`, HttpStatus.OK)
 });

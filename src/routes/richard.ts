@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
+import { exitWithMessage, exitWithContent, HttpStatus } from './shared'
 
 export const richardRoutes = Router();
 
 richardRoutes.get('/', (req: Request, res: Response) => {
-    res.send('Hello Riri !');
+    exitWithMessage(res, 'Hello Riri !', HttpStatus.OK)
 });
