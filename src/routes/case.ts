@@ -14,6 +14,7 @@ caseRoutes.get('/all', async (req: Request, res: Response) => {
     }
 });
 
+// /case/search?q=TitreDuCas
 caseRoutes.get('/search', async (req: Request, res: Response) => {
     const query = req.query.q as string;
 
@@ -30,6 +31,7 @@ caseRoutes.get('/search', async (req: Request, res: Response) => {
     }
 });
 
+// /case/idDuCas
 caseRoutes.get('/:id', async (req: Request, res: Response) => {
     const id = req.params.id as string;
 
@@ -49,13 +51,6 @@ caseRoutes.get('/:id', async (req: Request, res: Response) => {
         exitWithMessage(res, `${err}`)
         return
     }
-});
-
-// /user/123?time=14:00&location=Paris
-caseRoutes.get('/:id/details', (req: Request, res: Response) => {
-    const id = req.params.id;
-    const format = req.query.format;
-    exitWithMessage(res, `Case ID: ${id}, Format: ${format}`, HttpStatus.OK)
 });
 
 
