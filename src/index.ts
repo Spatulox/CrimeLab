@@ -7,7 +7,7 @@ import { generateCallRecords } from "./populate";
 import { mongoose, neo4jSession, neo4jDriver } from "./connexion";
 
 
-
+// Initialisation du serveur Express
 const PORT = config.PORT || 3000;
 
 const app = express();
@@ -16,6 +16,8 @@ app.use(routes);
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
+
+// G&énère et importe des fausses données
 async function main() {
     console.log("Lancement de CrimeLab...");
 
@@ -32,10 +34,10 @@ async function main() {
         console.error("Erreur lors de l'exécution :", error);
     }
 }
-
-main()
+/*main()
     .then(() => console.log("Exécution complète"))
     .catch(err => console.error("Erreur lors de l'exécution :", err));
+    */
 
 process.on("exit", async () => {
     await mongoose.disconnect();
