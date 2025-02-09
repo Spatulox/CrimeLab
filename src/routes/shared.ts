@@ -19,6 +19,10 @@ export function ObjectId(value: string): Types.ObjectId {
     return new Types.ObjectId(value);
 }
 
+export function print(text: string){
+    console.log(text);
+}
+
 export function exitWithMessage(res: Response, message: string = "Internal Server Error", code: number = HttpStatus.INTERNAL_SERVER_ERROR): void {
     res.status(code).json({ message: message });
 }
