@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { exitWithMessage, exitWithContent, HttpStatus, ObjectId, isMongoId } from './shared'
 import { Individual, Case, Testimony, CallRecord ,Location,Antenna} from '../schema'
+import {neo4jDriver} from "../connexion";
+import {userRoutes} from "./users";
 
 export const caseRoutes = Router();
 
@@ -115,6 +117,75 @@ caseRoutes.get('/:id', async (req: Request, res: Response) => {
         return
     }
 });
+
+caseRoutes.get('/users_involved/:id', async (req: Request, res: Response) => {
+    const session = neo4jDriver.session();
+    try {
+        const result = await session.run(
+            'MATCH (c:Case {id: $caseId})-[:INVOLVED_IN]-(i:Individual) ' +
+            'RETURN DISTINCT i',
+            { caseId: req.params.id.toString() }
+        );
+
+        const involvedIndividuals = result.records.map(record => {
+            const individual = record.get('i').properties;
+            return {
+                id: individual.id,
+                name: individual.name,
+                role: individual.role,
+                phoneNumber: individual.phoneNumber
+            };
+        });
+
+        exitWithContent(res, involvedIndividuals);
+    } catch (error) {
+        exitWithMessage(res, `Erreur serveur ${error}`, HttpStatus.BAD_REQUEST);
+    } finally {
+        await session.close();
+    }
+});
+
+caseRoutes.get('/calls_involved/:id', async (req: Request, res: Response) => {
+    const session = neo4jDriver.session();
+    try {
+        const result = await session.run(
+            'MATCH (c:Case {id: $caseId})-[:INVOLVED_IN]-(i1:Individual)' +
+            'MATCH (i1)-[call:CALLED]-(i2:Individual)' +
+            'WHERE (c)-[:INVOLVED_IN]-(i2)' +
+            'RETURN DISTINCT i1, i2, call',
+            { caseId: req.params.id.toString() }
+        );
+
+        const calls = result.records.map(record => {
+            const caller = record.get('i1').properties;
+            const receiver = record.get('i2').properties;
+            const callDetails = record.get('call').properties;
+            return {
+                caller: {
+                    id: caller.id,
+                    name: caller.name,
+                    phoneNumber: caller.phoneNumber
+                },
+                receiver: {
+                    id: receiver.id,
+                    name: receiver.name,
+                    phoneNumber: receiver.phoneNumber
+                },
+                callDetails: {
+                    dateTime: callDetails.dateTime,
+                    duration: callDetails.duration
+                }
+            };
+        });
+
+        exitWithContent(res, calls);
+    } catch (error) {
+        exitWithMessage(res, `Erreur serveur ${error}`, HttpStatus.BAD_REQUEST);
+    } finally {
+        await session.close();
+    }
+});
+
 
 
 caseRoutes.get('/?', (req: Request, res: Response) => {
