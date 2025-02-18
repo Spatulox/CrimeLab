@@ -1,0 +1,273 @@
+{
+	"info": {
+		"_postman_id": "5307ae09-7ab2-4749-84ba-29490b853598",
+		"name": "CrimeLab",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41932623"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get All users",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Search User by name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/user/search?user=Audrey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"search"
+							],
+							"query": [
+								{
+									"key": "user",
+									"value": "Audrey"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "id : 67a5e106526af5cfaa2d1a18",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/user/Antoinette",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"Antoinette"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user's cases",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/user/67a5e106526af5cfaa2d1a18?time=2025-02-07T10:00&location=6563%20Division%20Street",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"user",
+								"67a5e106526af5cfaa2d1a18"
+							],
+							"query": [
+								{
+									"key": "time",
+									"value": "2025-02-07T10:00"
+								},
+								{
+									"key": "location",
+									"value": "6563%20Division%20Street"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cases",
+			"item": [
+				{
+					"name": "search",
+					"item": [
+						{
+							"name": "Get Case By title",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:4000/case/search?q=Vol",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"case",
+										"search"
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "Vol"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by date",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by ID location",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:4000/case/search?q_location=67a61103afda8031d3268d05",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "4000",
+									"path": [
+										"case",
+										"search"
+									],
+									"query": [
+										{
+											"key": "q_location",
+											"value": "67a61103afda8031d3268d05"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case location by name",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by title and time",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by title and location name",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by time and location id",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get case by title, time and location",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case invalid date",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case invalid location",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "Get Case by title, time, location and individuals",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Case",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get Case By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/case/67a6107dcf8e9d08d2f0088c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"case",
+								"67a6107dcf8e9d08d2f0088c"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

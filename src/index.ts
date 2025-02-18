@@ -1,32 +1,25 @@
-import { generateFakeData } from "./populate";
-import { importAntennas } from "./importAntennas";
-import { generateCallRecords } from "./populate";
-import { mongoose, neo4jSession, neo4jDriver } from "./connexion";
+import express from 'express';
+import config from '../config.json'
+import cors from 'cors';
+import {routes} from './routes';
+import {mongoose, neo4jSession, neo4jDriver} from "./connexion";
 
-async function main() {
-    console.log("Lancement de CrimeLab...");
 
-    try {
-        await generateFakeData();
-        console.log("Données factices insérées !");
+// Initialisation du serveur Express
+const PORT = config.PORT || 3000;
 
-        await importAntennas();
-        console.log("Antennes relais importées !");
+const app = express();
+app.use(cors())
+app.use(routes);
 
-        await generateCallRecords();
-        console.log("Appels téléphoniques générés !");
-    } catch (error) {
-        console.error("Erreur lors de l'exécution :", error);
-    }
-}
+app.listen(PORT, () => {
+	console.log(`Serveur démarré sur http://localhost:${PORT}`);
+});
 
-main()
-    .then(() => console.log("Exécution complète"))
-    .catch(err => console.error("Erreur lors de l'exécution :", err));
 
 process.on("exit", async () => {
-    await mongoose.disconnect();
-    await neo4jSession.close();
-    await neo4jDriver.close();
-    console.log("Connexions fermées");
+	await mongoose.disconnect();
+	await neo4jSession.close();
+	await neo4jDriver.close();
+	console.log("Connexions fermées");
 });
