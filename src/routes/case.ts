@@ -171,10 +171,13 @@ caseRoutes.get('/calls_involved/:id', async (req: Request, res: Response) => {
 				},
 				callDetails: {
 					dateTime: callDetails.dateTime,
-					duration: callDetails.duration
+					duration: callDetails.duration,
+					antenna: await Antenna.findById(callDetails.antennaId)
 				}
 			};
 		});
+
+		const calls = await Promise.all(callPromises);
 
 		exitWithContent(res, calls);
 	} catch (error) {
