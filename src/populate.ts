@@ -188,7 +188,7 @@ async function generateCallRecords() {
 		const individuals = crimeCase.individuals;
 		if (individuals.length < 2) continue;
 
-		for (let i = 0; i < faker.number.int({min: 2, max: 5}); i++) {
+		for (let i = 0; i < faker.number.int({min: 2, max: 8}); i++) {
 			const [caller, receiver] = faker.helpers.shuffle(individuals).slice(0, 2);
 			const antenna = faker.helpers.arrayElement(antennas);
 			if (!antenna) continue;
@@ -204,19 +204,20 @@ async function generateCallRecords() {
 			const savedCall = await call.save();
 			calls.push(savedCall);
 
-			if (savedCall.caller && savedCall.receiver && savedCall.antenna) {
+			if (savedCall.caller && savedCall.receiver) {
 				await runNeo4jQuery(
-					"MATCH (c1:Individual {id: $callerId}), (c2:Individual {id: $receiverId}), (a:Antenna {id: $antennaId}) " +
-					"CREATE (c1)-[:CALLED {dateTime: $dateTime, duration: $duration}]->(c2)-[:VIA]->(a)",
+					"MATCH (c1:Individual {id: $callerId}), (c2:Individual {id: $receiverId}) " +
+					"CREATE (c1)-[:CALLED {dateTime: $dateTime, duration: $duration, antennaId: $antennaId}]->(c2)",
 					{
 						callerId: savedCall.caller.toString(),
 						receiverId: savedCall.receiver.toString(),
-						antennaId: savedCall.antenna.toString(),
 						dateTime: savedCall.dateTime.toISOString(),
-						duration: savedCall.duration
+						duration: savedCall.duration,
+						antennaId: savedCall.antenna ? savedCall.antenna.toString() : null
 					}
 				);
-			} else {
+
+		} else {
 				console.warn("Un appel avec des valeurs null a été ignoré !");
 			}
 		}
