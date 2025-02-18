@@ -1,8 +1,7 @@
 import {Router, Request, Response} from 'express';
 import {exitWithMessage, exitWithContent, HttpStatus, ObjectId, isMongoId} from './shared'
-import {Individual, Case, Testimony, CallRecord, Location, Antenna} from '../schema'
+import {Individual, Case, Location, Antenna} from '../schema'
 import {neo4jDriver} from "../connexion";
-import {userRoutes} from "./users";
 
 export const caseRoutes = Router();
 
@@ -56,7 +55,7 @@ caseRoutes.get('/search', async (req: Request, res: Response) => {
 				if (locationDoc) {
 					searchCriteria.location = locationDoc._id;
 				} else {
-					return exitWithContent(res, [], HttpStatus.NOT_FOUND);
+					return exitWithContent(res, [], HttpStatus.OK);
 				}
 			} catch (err) {
 				return exitWithMessage(res, `Erreur lors de la recherche de la location: ${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,7 +72,7 @@ caseRoutes.get('/search', async (req: Request, res: Response) => {
 				if (individualDoc) {
 					searchCriteria.individuals = individualDoc._id;
 				} else {
-					return exitWithMessage(res, "Individu non trouvé", HttpStatus.NOT_FOUND);
+					return exitWithMessage(res, "Individu non trouvé", HttpStatus.OK);
 				}
 			} catch (err) {
 				return exitWithMessage(res, `Erreur lors de la recherche de l'individu: ${err}`, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,7 +125,6 @@ caseRoutes.get('/users_involved/:id', async (req: Request, res: Response) => {
 			'RETURN DISTINCT i',
 			{caseId: req.params.id.toString()}
 		);
-
 		const involvedIndividuals = result.records.map(record => {
 			const individual = record.get('i').properties;
 			return {
@@ -155,11 +153,11 @@ caseRoutes.get('/calls_involved/:id', async (req: Request, res: Response) => {
 			'RETURN DISTINCT i1, i2, call',
 			{caseId: req.params.id.toString()}
 		);
-
-		const calls = result.records.map(record => {
+		const callPromises = result.records.map(async record => {
 			const caller = record.get('i1').properties;
 			const receiver = record.get('i2').properties;
 			const callDetails = record.get('call').properties;
+
 			return {
 				caller: {
 					id: caller.id,
@@ -173,10 +171,13 @@ caseRoutes.get('/calls_involved/:id', async (req: Request, res: Response) => {
 				},
 				callDetails: {
 					dateTime: callDetails.dateTime,
-					duration: callDetails.duration
+					duration: callDetails.duration,
+					antenna: await Antenna.findById(callDetails.antennaId)
 				}
 			};
 		});
+
+		const calls = await Promise.all(callPromises);
 
 		exitWithContent(res, calls);
 	} catch (error) {
