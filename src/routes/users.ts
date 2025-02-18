@@ -57,7 +57,7 @@ userRoutes.get('/all', async (req: Request, res: Response) => {
     }
 });
 
-// Get all the case where the user is impliqué
+// Get all the case where the user is referenced
 // Get the case of the user based on their location and time
 userRoutes.get('/:id', async (req: Request, res: Response) => {
     try {
@@ -146,6 +146,27 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
         return
     }
 });
+
+userRoutes.get('/involved/:id', async (req: Request, res: Response) => {
+    const session = neo4jDriver.session();
+    try {
+        const result = await session.run(
+            'MATCH (p:Individual {id: $personId})' +
+            'OPTIONAL MATCH (p)-[r]-(connectedPerson)' +
+            'RETURN p, type(r), connectedPerson',
+            { personId: req.params.id.toString() }
+        );
+
+        const connectedPersons = result.records.map(record => record.get('connectedPerson').properties);
+
+        exitWithContent(res, connectedPersons);
+    } catch (error) {
+        exitWithMessage(res, `Erreur serveur ${error}`, HttpStatus.BAD_REQUEST);
+    } finally {
+        await session.close();
+    }
+});
+
 
 userRoutes.get('/?', (req: Request, res: Response) => {
     exitWithMessage(res, `Tu es perdu...`, HttpStatus.OK)
