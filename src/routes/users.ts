@@ -1,8 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { exitWithMessage, exitWithContent, HttpStatus, isMongoId, ObjectId } from './shared'
-import { Individual, Case, Testimony, CallRecord ,Location,Antenna} from '../schema'
-import { Types } from 'mongoose'
-import {neo4jDriver} from "../connexion";
+import { Individual, Case, Testimony, CallRecord ,Location} from '../schema'
 
 export const userRoutes = Router();
 // /user/search?user=Richard

@@ -244,7 +244,11 @@ async function main() {
 }
 
 main()
-	.then(() => console.log("Exécution complète"))
-	.catch(err => console.error("Erreur lors de l'exécution :", err));
-
-process.exit(0);
+	.then(() => {
+		console.log("Exécution complète");
+		process.exit(0);
+	})
+	.catch(err => {
+		console.error("Erreur lors de l'exécution :", err);
+		process.exit(1);
+	});
