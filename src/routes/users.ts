@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { exitWithMessage, exitWithContent, HttpStatus, isMongoId, ObjectId } from './shared'
 import { Individual, Case, Testimony, CallRecord ,Location} from '../schema'
+import {neo4jDriver} from "../connexion";
 
 export const userRoutes = Router();
 // /user/search?user=Richard
@@ -12,7 +13,7 @@ userRoutes.get('/search', async (req: Request, res: Response) => {
         try{
             const user_content = await Individual.find({ name: new RegExp(user, 'i') })
             if(user_content.length == 0){
-                exitWithMessage(res, `No users`, HttpStatus.NOT_FOUND)
+                exitWithMessage(res, `No users`, HttpStatus.OK)
                 return
             }
             exitWithContent(res, user_content)
@@ -27,7 +28,7 @@ userRoutes.get('/search', async (req: Request, res: Response) => {
         try{
             const user_content = await Individual.findById(id)
             if(!user_content){
-                exitWithMessage(res, `No users`, HttpStatus.NOT_FOUND)
+                exitWithMessage(res, `No users`, HttpStatus.OK)
                 return
             }
             exitWithContent(res, user_content)
@@ -38,7 +39,7 @@ userRoutes.get('/search', async (req: Request, res: Response) => {
         }
     }
 
-    exitWithMessage(res, `No user found`, HttpStatus.NOT_FOUND)
+    exitWithMessage(res, `No user found`, HttpStatus.OK)
 });
 
 // Get all user
@@ -46,7 +47,7 @@ userRoutes.get('/all', async (req: Request, res: Response) => {
     try{
         const users = await Individual.find()
         if(users.length == 0){
-            exitWithMessage(res, `No users`, HttpStatus.NOT_FOUND)
+            exitWithMessage(res, `No users`, HttpStatus.OK)
             return
         }
         exitWithContent(res, users)
@@ -72,7 +73,7 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
 
         const user = await Individual.findById(id);
         if (!user) {
-            exitWithMessage(res, "Utilisateur non trouvé", HttpStatus.NOT_FOUND)
+            exitWithMessage(res, "Utilisateur non trouvé", HttpStatus.OK)
             return
         }
 
@@ -85,7 +86,7 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
                 if (locationDoc) {
                     locationId = locationDoc._id.toString();
                 } else {
-                    exitWithMessage(res, "Location n'existe pas", HttpStatus.NOT_FOUND)
+                    exitWithMessage(res, "Location n'existe pas", HttpStatus.OK)
                     return
                 }
             } else {
