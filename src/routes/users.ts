@@ -127,12 +127,22 @@ userRoutes.get('/:id', async (req: Request, res: Response) => {
         };
 
         if (timeString) {
+            const baseDate = new Date(timeString);
+            const startDate = new Date(baseDate);
+            startDate.setMonth(baseDate.getMonth() - 1); // Un mois avant
+
+            const endDate = new Date(baseDate);
+            endDate.setMonth(baseDate.getMonth() + 1); // Un mois après
+
             const callRecords = await CallRecord.find({
                 $or: [
-                    { caller: { $in: involvedIndividuals.map(id => ObjectId(id)) } },
-                    { receiver: { $in: involvedIndividuals.map(id => ObjectId(id)) } }
+                    { caller: ObjectId(id)},
+                    { receiver: ObjectId(id) }
                 ],
-                dateTime: query.date
+                dateTime: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
             }).populate('caller receiver antenna');
 
             response.callRecords = callRecords;
