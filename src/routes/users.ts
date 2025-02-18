@@ -39,6 +39,8 @@ userRoutes.get('/search', async (req: Request, res: Response) => {
             return
         }
     }
+
+    exitWithMessage(res, `No user found`, HttpStatus.NOT_FOUND)
 });
 
 // Get all user

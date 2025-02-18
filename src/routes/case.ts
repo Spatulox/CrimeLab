@@ -110,7 +110,7 @@ caseRoutes.get('/:id', async (req: Request, res: Response) => {
         if (!case_res || case_res.length == 0){
             return exitWithMessage(res, "Cas non trouvé", 404);
         }
-        exitWithContent(res, case_res)
+        exitWithContent(res, case_res[0])
         return
     } catch(err){
         exitWithMessage(res, `${err}`)
